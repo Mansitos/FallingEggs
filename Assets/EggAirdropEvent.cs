@@ -43,6 +43,7 @@ public class EggAirdropEvent : MonoBehaviour
         {
             orientation = 1;
         }
+
         startPos = new Vector3(orientation*xPosMoveRange, Random.Range(yPos.x, yPos.y), 0);
         endPos  = new Vector3(orientation*-xPosMoveRange, Random.Range(yPos.x, yPos.y), 0);
 
@@ -74,14 +75,6 @@ public class EggAirdropEvent : MonoBehaviour
             spawnTimestamps.Add((i+1) * spawnInterval);
             Debug.Log(spawnTimestamps[i]);
         }
-
-        Debug.Log("____");
-        Debug.Log(eggsToDrop);
-        Debug.Log(distance);
-        Debug.Log(runTime);
-        //Debug.Log(runTime);
-        //Debug.Log(spawnInterval);
-
     }
 
     void Update()

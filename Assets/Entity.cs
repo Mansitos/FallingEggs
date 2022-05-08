@@ -10,6 +10,8 @@ public class Entity : MonoBehaviour
     [SerializeField] bool playerHasToDestroy = true;
     protected Manager manager;
 
+    [SerializeField] GameObject scorePopUpPrefab;
+
     protected int remainingHits;
 
     protected virtual void Start()
@@ -32,13 +34,16 @@ public class Entity : MonoBehaviour
         }
     }
 
-    public void destroy(bool destroyedByPlayer)
+    public virtual void destroy(bool destroyedByPlayer)
     {
         ScoreManager sm = GameObject.FindGameObjectWithTag("ScoreManager").GetComponent<ScoreManager>();
         if (destroyedByPlayer)
         {
             if (playerHasToDestroy)
             {
+                GameObject popup = GameObject.Instantiate(scorePopUpPrefab);
+                popup.transform.position = this.transform.position;
+                popup.GetComponent<PointPopUp>().setValue(score);
                 sm.addScore(score);
             }
             else
@@ -55,6 +60,9 @@ public class Entity : MonoBehaviour
             }
             else
             {
+                GameObject popup = GameObject.Instantiate(scorePopUpPrefab);
+                popup.transform.position = this.transform.position;
+                popup.GetComponent<PointPopUp>().setValue(score);
                 sm.addScore(score);
             }
         }

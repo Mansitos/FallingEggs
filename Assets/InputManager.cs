@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
+
+    [SerializeField] GameObject inputFeedbackPrefab;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,23 +24,29 @@ public class InputManager : MonoBehaviour
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.transform.tag == "Egg")
+                if (hit.transform.tag == "Egg" || hit.transform.tag == "Eagle" || hit.transform.tag == "AlienShip")
                 {
-                    hit.transform.GetComponent<Egg>().registerHit();
+                    hit.transform.GetComponent<Entity>().registerHit();
                 }
             }
+
+            GameObject feedbackProp = GameObject.Instantiate(inputFeedbackPrefab);
+            feedbackProp.transform.position = ray.origin;
         }
-        else if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Ended)
+
+        else if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
         {
             ray = Camera.main.ScreenPointToRay(Input.GetTouch(0).position);
             if (Physics.Raycast(ray, out hit))
             {
-                if (hit.transform.tag == "Egg")
+                if (hit.transform.tag == "Egg" || hit.transform.tag == "Eagle" || hit.transform.tag == "AlienShip")
                 {
-                    hit.transform.GetComponent<Egg>().registerHit();
+                    hit.transform.GetComponent<Entity>().registerHit();
                 }
             }
-        }
 
+            GameObject feedbackProp = GameObject.Instantiate(inputFeedbackPrefab);
+            feedbackProp.transform.position = ray.origin;
+        }
     }
 }

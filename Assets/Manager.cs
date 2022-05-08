@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,16 +10,29 @@ public class Manager : MonoBehaviour
     [SerializeField] GameObject scoreManager;
     [SerializeField] GameObject gameOverUI;
     [SerializeField] GameObject lifesUI;
+    [SerializeField] GameObject mainCamera;
     [SerializeField] int lifes;
     [SerializeField] int maxLifes;
-    public float difficultyFactor = 1;
+    [SerializeField] bool devMode;
+    [ShowOnly] [SerializeField] int collectedCoins = 0;
+    
+
+    private CameraShake cameraShake;
+    private LoadAndSaveSystem loadAndSaveSystem;
+    private SceneNavigator sceneNavigator;
+
+    private UserData userData;
 
     void Start()
     {
         Time.timeScale = 1;
         gameOverUI.SetActive(false);
         lifesUI.GetComponentInChildren<Text>().text = lifes.ToString();
-    }
+        cameraShake = mainCamera.GetComponent<CameraShake>();
+        loadAndSaveSystem = GameObject.FindGameObjectWithTag("LoadAndSaveSystem").GetComponent<LoadAndSaveSystem>();
+        sceneNavigator = GameObject.FindGameObjectWithTag("SceneNavigator").GetComponent<SceneNavigator>();
+        userData = loadAndSaveSystem.loadUserData();
+}
 
     public void addLife()
     {
@@ -27,49 +41,84 @@ public class Manager : MonoBehaviour
             lifes++;
         }
 
-        lifesUI.GetComponentInChildren<Text>().text = lifes.ToString();
+        updateUI();
     }
 
     public void removeLife(int lifesToRemove)
     {
         lifes = lifes - lifesToRemove;
-        if(lifes <= 0)
+        if(lifes <= 0 && !devMode)
         {
             gameOver();
         }
 
+        updateUI();
+        StartCoroutine(cameraShake.Shake(0.16f, 0.18f));
+    }
+
+    private void updateUI()
+    {
         lifesUI.GetComponentInChildren<Text>().text = lifes.ToString();
     }
 
     void Update()
     {
-        if (scoreManager.GetComponent<ScoreManager>().getUserScore() < 0)
-        {
-            gameOver();
-        }
-
-
-        difficultyFactor = Mathf.Clamp((100 - Mathf.Sqrt(1 + Time.realtimeSinceStartup * 5.0f)) / 100, 0.33f, 1.0f);
     }
 
-    private void gameOver()
+    public void gameOver()
     {
+        int score = scoreManager.GetComponent<ScoreManager>().getUserScore();
         gameOverUI.SetActive(true);
+        gameOverUI.GetComponent<GameOverUI>().updateGameOverUI(score, userData.scoreRecord);
         Time.timeScale = 0.2f;
+
+        registerScoreOnUserData();
+    }
+
+    private void registerScoreOnUserData()
+    {
+        int score = scoreManager.GetComponent<ScoreManager>().getUserScore();
+        if (userData.scoreRecord < score)
+        {
+            Debug.Log("Saving new user record!");
+            userData.scoreRecord = score;
+        }
+
+        userData.coinBalance += collectedCoins;
+        collectedCoins = 0;
+
+        loadAndSaveSystem.saveUserData(userData);
+
     }
 
     public void restartGame()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        sceneNavigator.loadPlayScene();
     }
 
-    public float getDifficultyFactor()
+    public float getDifficultyFactor(float initTimeOffset)
     {
-        return difficultyFactor;
+        return Mathf.Clamp((100 - Mathf.Sqrt(1 + (Time.realtimeSinceStartup - initTimeOffset) * 5.0f)) / 100, 0.33f, 1.0f);
     }
 
     public bool isMaxLife()
     {
         return lifes == maxLifes;
+    }
+
+    public void collectCoin(int value)
+    {
+        collectedCoins += value;
+    }
+
+    public void setLifes(int value)
+    {
+        lifes = 0;
+        updateUI();
+    }
+
+    public void backToMainMenu()
+    {
+        sceneNavigator.loadMenuScene();
     }
 }
