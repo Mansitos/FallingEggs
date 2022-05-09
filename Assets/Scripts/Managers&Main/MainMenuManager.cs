@@ -10,6 +10,11 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] GameObject recordText;
     [SerializeField] GameObject coinBalanceText;
 
+    [SerializeField] GameObject mainPage;
+    [SerializeField] GameObject optionsPage;
+    [SerializeField] GameObject aboutPage;
+    [SerializeField] GameObject shopPage;
+
     private LoadAndSaveSystem loadAndSaveSystem;
 
     void Start()
@@ -38,4 +43,37 @@ public class MainMenuManager : MonoBehaviour
     {
         sceneNavigator.loadPlayScene();
     }
+
+    private void disableAllPages()
+    {
+        mainPage.SetActive(false);
+        optionsPage.SetActive(false);
+        aboutPage.SetActive(false);
+        shopPage.SetActive(false);
+    }
+
+    public void loadMainPages()
+    {
+        disableAllPages();
+        mainPage.SetActive(true);
+    }
+
+    public void loadShopPage()
+    {
+        disableAllPages();
+        shopPage.SetActive(true);
+    }
+
+    public void loadAboutPage()
+    {
+        disableAllPages();
+        aboutPage.SetActive(true);
+    }
+
+    public void loadOptionsPage()
+    {
+        disableAllPages();
+        optionsPage.SetActive(true);
+    }
+
 }
