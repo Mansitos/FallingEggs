@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +6,7 @@ using UnityEngine.UI;
 public class MainMenuManager : MonoBehaviour
 {
     private SceneNavigator sceneNavigator;
+
     [SerializeField] GameObject recordText;
     [SerializeField] GameObject coinBalanceText;
 
@@ -19,12 +19,15 @@ public class MainMenuManager : MonoBehaviour
 
     void Start()
     {
-        sceneNavigator = GameObject.FindGameObjectWithTag("SceneNavigator").GetComponent<SceneNavigator>();
-        loadAndSaveSystem = GameObject.FindGameObjectWithTag("LoadAndSaveSystem").GetComponent<LoadAndSaveSystem>();
-
+        initializeComponents();
         updateRecordScoreText();
         updateCoinBalanceText();
-    
+    }
+
+    private void initializeComponents()
+    {
+        sceneNavigator = GameObject.FindGameObjectWithTag("SceneNavigator").GetComponent<SceneNavigator>();
+        loadAndSaveSystem = GameObject.FindGameObjectWithTag("LoadAndSaveSystem").GetComponent<LoadAndSaveSystem>();
     }
 
     private void updateCoinBalanceText()
@@ -52,7 +55,7 @@ public class MainMenuManager : MonoBehaviour
         shopPage.SetActive(false);
     }
 
-    public void loadMainPages()
+    public void loadMainPage()
     {
         disableAllPages();
         mainPage.SetActive(true);

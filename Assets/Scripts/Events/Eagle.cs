@@ -27,7 +27,6 @@ public class Eagle : Entity
             other.gameObject.transform.position = this.transform.position - new Vector3(0, 1, 0);
             other.transform.parent = this.gameObject.transform;
             eagleManager.notifyCaptureEgg();
-
         }
     }
 

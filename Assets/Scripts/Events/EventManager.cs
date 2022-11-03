@@ -6,15 +6,23 @@ public class EventManager : MonoBehaviour
 {
     [SerializeField] GameObject airDropEventPrefab;
     [SerializeField] Vector2 airdropIntervalRange;
+    [SerializeField] float firstAirdropEventTimestampOffset;
     [ShowOnly] [SerializeField] float nextAirdropTimestamp;
 
     [SerializeField] GameObject eagleAttackEventPrefab;
     [SerializeField] Vector2 eagleAttackIntervalRange;
+    [SerializeField] float firstEagleAttackEventTimestampOffset;
     [ShowOnly] [SerializeField] float nextEagleAttackTimestamp;
 
     [SerializeField] GameObject alienAttackEventPrefab;
     [SerializeField] Vector2 alienAttackIntervalRange;
+    [SerializeField] float firstAlienAttackEventTimestampOffset;
     [ShowOnly] [SerializeField] float nextAlienAttackTimestamp;
+
+    [SerializeField] GameObject chuckAttackEventPrefab;
+    [SerializeField] Vector2 chuckAttackIntervalRange;
+    [SerializeField] float firstChuckAttackEventTimestampOffset;
+    [ShowOnly] [SerializeField] float nextChuckAttackTimestamp;
 
     private float elapsedTime; 
 
@@ -22,9 +30,10 @@ public class EventManager : MonoBehaviour
     {
         elapsedTime = Time.realtimeSinceStartup;
 
-        nextAirdropTimestamp     = elapsedTime + Random.Range(airdropIntervalRange.x, airdropIntervalRange.y);
-        nextEagleAttackTimestamp = elapsedTime + Random.Range(eagleAttackIntervalRange.x, eagleAttackIntervalRange.y);
-        nextAlienAttackTimestamp = elapsedTime + Random.Range(alienAttackIntervalRange.x, alienAttackIntervalRange.y);
+        nextAirdropTimestamp     = firstAirdropEventTimestampOffset + elapsedTime + Random.Range(airdropIntervalRange.x, airdropIntervalRange.y);
+        nextEagleAttackTimestamp = firstEagleAttackEventTimestampOffset + elapsedTime + Random.Range(eagleAttackIntervalRange.x, eagleAttackIntervalRange.y);
+        nextAlienAttackTimestamp = firstAlienAttackEventTimestampOffset + elapsedTime + Random.Range(alienAttackIntervalRange.x, alienAttackIntervalRange.y);
+        nextChuckAttackTimestamp = firstChuckAttackEventTimestampOffset + elapsedTime + Random.Range(chuckAttackIntervalRange.x, chuckAttackIntervalRange.y);
     }
 
     void Update()
@@ -47,6 +56,12 @@ public class EventManager : MonoBehaviour
         {
             GameObject.Instantiate(alienAttackEventPrefab);
             nextAlienAttackTimestamp = elapsedTime + Random.Range(alienAttackIntervalRange.x, alienAttackIntervalRange.y);
+        }
+
+        if (elapsedTime > nextChuckAttackTimestamp)
+        {
+            GameObject.Instantiate(chuckAttackEventPrefab);
+            nextChuckAttackTimestamp = elapsedTime + Random.Range(chuckAttackIntervalRange.x, chuckAttackIntervalRange.y);
         }
     }
 }

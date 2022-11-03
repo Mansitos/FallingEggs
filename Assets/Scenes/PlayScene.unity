@@ -320,7 +320,7 @@ MonoBehaviour:
   lifes: 2
   maxLifes: 3
   devMode: 0
-  collectedCoins: 0
+  collectedCoinInSession: 0
 --- !u!4 &291604437
 Transform:
   m_ObjectHideFlags: 0
@@ -428,7 +428,7 @@ GameObject:
   - component: {fileID: 537671358}
   m_Layer: 0
   m_Name: ChickensManager
-  m_TagString: Untagged
+  m_TagString: ChickensManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -445,21 +445,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6905c2fce04c784aa8cdb04bf765f68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nextChickenInterval: 60
+  nextChickenSpawnInterval: 45
   chickenPrefab: {fileID: 7336805348964635884, guid: 4ffc853339a81d74aae5ee90c61011d5, type: 3}
   increaseFactor: 1.5
-  eggSpawnInterval: {x: 0.3, y: 3}
+  nextEggSpawnInterval: {x: 0.35, y: 3.1}
+  xSpawnLims: 10
+  ySpawnLims: {x: 0, y: 6}
   spawnedChickens: 0
-  nextSpawnTimestamp: 0
+  nextChickenSpawnTimestamp: 0
   activeChickens: []
   eggPrefab: {fileID: 2552642617128477859, guid: 85614ec0e8d327f4eafeed6757880f01, type: 3}
-  badEggChance: 0.125
+  badEggChance: 0.135
   badEggPrefab: {fileID: 4781300741363360556, guid: 08c66240e28736b42aba04d3857407b6, type: 3}
   strongEggChance: 0.125
   strongEggPrefab: {fileID: 4656650694722184714, guid: ee6621ba5affa884c819a0b210cf341a, type: 3}
-  goldEggChance: 0.01
+  goldEggChance: 0.025
   goldEggPrefab: {fileID: 2035749288637950021, guid: d5afc4b3ef0a49f44812f896797c6899, type: 3}
-  newLifeChance: 0.01
+  newLifeChance: 0.0125
   newLifePrefab: {fileID: 7068786242490956142, guid: f5d308a412b578b4dbbf1a7af2416363, type: 3}
 --- !u!4 &537671359
 Transform:
@@ -769,7 +771,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.1792453, g: 0.031283375, b: 0.031283375, a: 0.6862745}
+  m_Color: {r: 0.1792453, g: 0.031283375, b: 0.031283375, a: 0.7254902}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -892,13 +894,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   airDropEventPrefab: {fileID: 6009976973415748777, guid: 91943a50aa380b9459e9a663039b27c3, type: 3}
   airdropIntervalRange: {x: 15, y: 25}
+  firstAirdropEventTimestampOffset: 10
   nextAirdropTimestamp: 0
   eagleAttackEventPrefab: {fileID: 2295641422572446098, guid: 1452ae60e6cd7a24591e2f451fdfea39, type: 3}
   eagleAttackIntervalRange: {x: 20, y: 40}
+  firstEagleAttackEventTimestampOffset: 25
   nextEagleAttackTimestamp: 0
   alienAttackEventPrefab: {fileID: 2804949522232454653, guid: b1cae3b0906c7de4396c1ff1ef9b219f, type: 3}
-  alienAttackIntervalRange: {x: 30, y: 50}
+  alienAttackIntervalRange: {x: 35, y: 50}
+  firstAlienAttackEventTimestampOffset: 45
   nextAlienAttackTimestamp: 0
+  chuckAttackEventPrefab: {fileID: 1977399736963147175, guid: d064e43bd3490dd4ab1fc4c5efffa5b0, type: 3}
+  chuckAttackIntervalRange: {x: 25, y: 35}
+  firstChuckAttackEventTimestampOffset: 30
+  nextChuckAttackTimestamp: 0
 --- !u!4 &952663784
 Transform:
   m_ObjectHideFlags: 0
@@ -1423,7 +1432,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1760480767
 RectTransform:
   m_ObjectHideFlags: 0

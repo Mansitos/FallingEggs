@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class Egg : Entity
 {
-
     public Vector2 speedRange;
     protected float speed;
-
 
     protected override void Start()
     {
@@ -20,8 +18,8 @@ public class Egg : Entity
         move();
     }
 
-    private void move()
+    protected virtual void move()
     {
-        transform.position = transform.position - new Vector3(0, speed, 0) * Time.deltaTime;
+        transform.position = transform.position - new Vector3(0, speed, 0) * Time.smoothDeltaTime;
     }
 }

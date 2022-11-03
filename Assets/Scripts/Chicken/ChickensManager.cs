@@ -5,19 +5,22 @@ using UnityEngine;
 public class ChickensManager : MonoBehaviour
 {
     private Manager manager;
-    [SerializeField] float nextChickenInterval;
+    [SerializeField] float nextChickenSpawnInterval;
     private List<GameObject> chickens = new List<GameObject>();
     [SerializeField] GameObject chickenPrefab;
     [SerializeField] float increaseFactor;
 
-    [SerializeField] Vector2 eggSpawnInterval;
+    [SerializeField] Vector2 nextEggSpawnInterval;
     private Vector2 startingEggSpawnInterval;
+
+    [SerializeField] protected float xSpawnLims;
+    [SerializeField] protected Vector2 ySpawnLims;
 
     private float initTime;
 
     [ShowOnly] public int spawnedChickens = 0;
-    [ShowOnly] [SerializeField] float nextSpawnTimestamp;
-    [SerializeField] List<GameObject> activeChickens = new List<GameObject>();
+    [ShowOnly] [SerializeField] float nextChickenSpawnTimestamp;
+    [SerializeField] public List<GameObject> activeChickens = new List<GameObject>();
 
     public GameObject eggPrefab;
 
@@ -37,14 +40,14 @@ public class ChickensManager : MonoBehaviour
     private float startingNewLifeChange;
     public GameObject newLifePrefab;
 
-    private bool waitForNextSpawn = false;
+    private bool waitForNextEggSpawn = false;
     private Texture chickenSprite;
 
 
 
     void Start()
     {
-        startingEggSpawnInterval = eggSpawnInterval;
+        startingEggSpawnInterval = nextEggSpawnInterval;
         startingBadEggChance = badEggChance;
         startingStrongEggChance = strongEggChance;
         startingNewLifeChange = newLifeChance;
@@ -52,36 +55,44 @@ public class ChickensManager : MonoBehaviour
 
         initTime = Time.timeSinceLevelLoad;
 
-        nextSpawnTimestamp = -1;
+        nextChickenSpawnTimestamp = -1;
         activeChickens.Clear();
         manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<Manager>();
     }
 
     void Update()
     {
-        if(Time.timeSinceLevelLoad > nextSpawnTimestamp)
+        // Wait-time for next chicken spawn is elapsed...
+        if (Time.timeSinceLevelLoad > nextChickenSpawnTimestamp) 
         {
-            spawnedChickens++;
-            nextSpawnTimestamp = Time.timeSinceLevelLoad + nextChickenInterval;
-            nextChickenInterval = nextChickenInterval * increaseFactor;
-            GameObject spawnedChicken = GameObject.Instantiate(chickenPrefab);
-            spawnedChicken.GetComponent<Renderer>().material.SetTexture("_MainTex", chickenSprite);
-            activeChickens.Add(spawnedChicken);
+            spawnChicken();
         }
 
-        if (waitForNextSpawn == false)
+        // Wait-time for next egg spawn is elapsed...
+        if (waitForNextEggSpawn == false)
         {
             StartCoroutine(SpawnEgg());
-            waitForNextSpawn = true;
+            waitForNextEggSpawn = true;
         }
 
     }
 
-    public void setChickensSprite(Texture sprite)
-    {
-        chickenSprite = sprite;
-    }
+    private void spawnChicken()
+    { 
+        nextChickenSpawnTimestamp = Time.timeSinceLevelLoad + nextChickenSpawnInterval;
+        nextChickenSpawnInterval = nextChickenSpawnInterval * increaseFactor;
 
+        GameObject spawnedChicken = GameObject.Instantiate(chickenPrefab);
+
+        updateChickenSprite(spawnedChicken);
+
+        Vector3 spawnPosition = generateRandomSpawnPosition();
+
+        spawnedChicken.transform.position = spawnPosition;
+
+        spawnedChickens++;
+        activeChickens.Add(spawnedChicken);
+    }
 
     IEnumerator SpawnEgg()
     {
@@ -91,37 +102,69 @@ public class ChickensManager : MonoBehaviour
 
         GameObject newEgg;
 
-        if (Random.value < badEggChance)
-        {
-            newEgg = Object.Instantiate(badEggPrefab);
-        }
-        else if (Random.value < newLifeChance && !manager.isMaxLife())
-        {
-            newEgg = Object.Instantiate(newLifePrefab);
-        }
-        else if (Random.value < strongEggChance)
-        {
-            newEgg = Object.Instantiate(strongEggPrefab);
-        }
-        else if (Random.value < goldEggChance)
-        {
-            newEgg = Object.Instantiate(goldEggPrefab);
-        }
-        else
-        {
-            newEgg = Object.Instantiate(eggPrefab);
-        }
-
         // Randomly select a chicken
-        int index = (int)Random.Range(0, spawnedChickens);
+        int selectedChickenIndex = (int)Random.Range(0, spawnedChickens);
+        GameObject selectedChicken = activeChickens[selectedChickenIndex];
+
+        bool isSelectedChickenInSpawnPhase = selectedChicken.GetComponent<Chicken>().spawnPhase;
+
+        if (isSelectedChickenInSpawnPhase == false && selectedChicken != null)
+        {
+            if (Random.value < badEggChance)
+            {
+                newEgg = Object.Instantiate(badEggPrefab);
+            }
+            else if (Random.value < newLifeChance && !manager.isMaxLife())
+            {
+                newEgg = Object.Instantiate(newLifePrefab);
+            }
+            else if (Random.value < strongEggChance)
+            {
+                newEgg = Object.Instantiate(strongEggPrefab);
+            }
+            else if (Random.value < goldEggChance)
+            {
+                newEgg = Object.Instantiate(goldEggPrefab);
+            }
+            else
+            {
+                newEgg = Object.Instantiate(eggPrefab);
+            }
+
+            newEgg.transform.position = selectedChicken.transform.position - new Vector3(0, 0.75f, 0);
+            nextEggSpawnInterval = startingEggSpawnInterval * manager.getDifficultyFactor(initTime);
+            float waitTime = Random.Range(nextEggSpawnInterval.x, nextEggSpawnInterval.y);
+            yield return new WaitForSeconds(waitTime);
+            waitForNextEggSpawn = false;
+        }
+        else //Selected chicken is in spawn phase, select another chicken in next frame and don't wait for next spawn
+        {
+            yield return new WaitForSeconds(0.2f);
+            waitForNextEggSpawn = false;
+        }
+    }
 
 
-        newEgg.transform.position = activeChickens[index].transform.position - new Vector3(0, 0.5f, 0);
+    protected virtual Vector3 generateRandomSpawnPosition()
+    {
+        float spawnSide = 1;
+        if (Random.value > 0.5)
+        {
+            spawnSide = -1;
+        }
+        float fixed_x = xSpawnLims * spawnSide;
+        Vector3 randomSpawnPos = MovementUtilities.generateRandom2DPositionInRange(fixed_x, fixed_x, ySpawnLims.x, ySpawnLims.y, 0);
+        return randomSpawnPos;
+    }
 
-        eggSpawnInterval = startingEggSpawnInterval * manager.getDifficultyFactor(initTime);
-        float waitTime = Random.Range(eggSpawnInterval.x, eggSpawnInterval.y);
-        yield return new WaitForSeconds(waitTime);
-        waitForNextSpawn = false;
+    private void updateChickenSprite(GameObject chicken)
+    {
+        chicken.GetComponent<Renderer>().material.SetTexture("_MainTex", chickenSprite);
+    }
+
+    public void setSelectedChickenSprite(Texture sprite)
+    {
+        chickenSprite = sprite;
     }
 
 }

@@ -25,9 +25,4 @@ public class NewLifeEgg : Egg
             destroy(true);
         }
     }
-
-    private void move()
-    {
-        transform.position = transform.position - new Vector3(0, speed, 0) * Time.deltaTime;
-    }
 }

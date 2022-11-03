@@ -64,7 +64,7 @@ public class AlienDropEvent : Event
 
             // Move into destination
             Vector3 direction = (alienShip.transform.position - nextDestination).normalized;
-            Vector3 newPosition = alienShip.transform.position + -direction * speed * Time.deltaTime;
+            Vector3 newPosition = alienShip.transform.position + -direction * speed * Time.smoothDeltaTime;
 
             float distance = Vector3.Distance(alienShip.transform.position, nextDestination);
             float stepDistance = Vector3.Distance(alienShip.transform.position, newPosition);

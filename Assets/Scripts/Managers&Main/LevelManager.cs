@@ -15,9 +15,14 @@ public class LevelManager : MonoBehaviour
 
     void Start()
     {
+        setupSelectedSprite();
+    }
+
+    private void setupSelectedSprite()
+    {
         terrain.GetComponent<Renderer>().material.SetTexture("_MainTex", terrainSprite);
         sky.GetComponent<Renderer>().material.SetTexture("_MainTex", skySprite);
-        chickensManager.GetComponent<ChickensManager>().setChickensSprite(chickenSprite);
+        chickensManager.GetComponent<ChickensManager>().setSelectedChickenSprite(chickenSprite);
     }
 
     void Update()

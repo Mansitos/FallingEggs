@@ -7,7 +7,7 @@ public class Entity : MonoBehaviour
     [SerializeField] public int hitToDestroy = 1;
     [SerializeField] public int score = 1;
     [SerializeField] public int penalty = 1;
-    [SerializeField] bool playerHasToDestroy = true;
+    [SerializeField] bool playerHasToDestroy;
     protected Manager manager;
 
     [SerializeField] GameObject scorePopUpPrefab;
@@ -18,6 +18,11 @@ public class Entity : MonoBehaviour
     {
         remainingHits = hitToDestroy;
         manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<Manager>();
+
+        if (playerHasToDestroy) // So that it is always on front!
+        {
+            transform.position += new Vector3(0, 0, -0.01f);
+        }
     }
 
     void Update()

@@ -46,10 +46,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   xPosMoveRange: 10
   xSpawnLimits: 6.25
-  yPos: {x: 0, y: 6}
-  debug: 1
-  speedRange: {x: 3, y: 6}
-  eggsRange: {x: 4, y: 10}
+  yLims: {x: 0, y: 6}
+  debug: 0
+  speedRange: {x: 3, y: 5}
+  eggsRange: {x: 4, y: 9}
   posMarker: {fileID: 1219749792462163513, guid: 85df048ce2a0efb4ea7033e9f8110c04, type: 3}
   ChickenPrefab: {fileID: 7336805348964635884, guid: 4ffc853339a81d74aae5ee90c61011d5, type: 3}
   eggPrefab: {fileID: 2552642617128477859, guid: 85614ec0e8d327f4eafeed6757880f01, type: 3}

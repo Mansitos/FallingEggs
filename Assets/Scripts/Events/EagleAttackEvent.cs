@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,15 +9,13 @@ public class EagleAttackEvent : Event
     [SerializeField] float escapingSpeedFactor;
     private Vector3 startingScale;
 
-
     private GameObject eagle;
-    [ShowOnly] [SerializeField] bool hasAnEgg = false;
-    [ShowOnly] [SerializeField] bool isEscaping = false;
-
+    [ShowOnly][SerializeField] bool hasAnEgg = false;
+    [ShowOnly][SerializeField] bool isEscaping = false;
 
     void Start()
     {
-        // Spawning phase
+        // Spawning & init phase
         spawnPosition = generateRandomSpawnPosition();
         eagle = GameObject.Instantiate(eaglePrefab);
         eagle.transform.parent = this.gameObject.transform;
@@ -37,7 +36,7 @@ public class EagleAttackEvent : Event
     {
         if (destinationReached && !hasAnEgg)
         {
-            nextDestination = new Vector3(Random.Range(-xAttackAreaLims, xAttackAreaLims), Random.Range(yAttackAreaLims.x, yAttackAreaLims.y), 0);
+            nextDestination = MovementUtilities.generateRandom2DPositionInRange(-xAttackAreaLims, xAttackAreaLims, yAttackAreaLims.x, yAttackAreaLims.y, eagle.transform.position.z);
             destinationReached = false;
         }
         else if(hasAnEgg && destinationReached && !isEscaping)
@@ -51,20 +50,20 @@ public class EagleAttackEvent : Event
             {
                 escapeSide = -1;
             }
+            float x_fixed = escapeSide * xSpawnLims;
+            nextDestination = MovementUtilities.generateRandom2DPositionInRange(x_fixed, x_fixed, yAttackAreaLims.x, yAttackAreaLims.y, eagle.transform.position.z);
 
-            nextDestination = new Vector3(escapeSide*xSpawnLims, Random.Range(yAttackAreaLims.x, yAttackAreaLims.y), 0);
-
-        }else if (hasAnEgg && destinationReached && isEscaping)
+        }
+        else if (hasAnEgg && destinationReached && isEscaping)
         {
             eagle.GetComponent<Eagle>().notifyPenalty();
             Destroy(eagle);
             Destroy(gameObject);
-
         }
 
         // Move into destination
         Vector3 direction = (eagle.transform.position - nextDestination).normalized;
-        Vector3 newPosition = eagle.transform.position + -direction * speed * Time.deltaTime;
+        Vector3 newPosition = eagle.transform.position + -direction * speed * Time.smoothDeltaTime;
 
         float distance = Vector3.Distance(eagle.transform.position, nextDestination);
         float stepDistance = Vector3.Distance(eagle.transform.position, newPosition);
@@ -79,7 +78,11 @@ public class EagleAttackEvent : Event
             eagle.transform.position = newPosition;
         }
 
-        // Sprite orientation
+        updateSpriteOrientation(direction);
+    }
+
+    private void updateSpriteOrientation(Vector3 direction)
+    {
         if (direction.x < 0) // Going left
         {
             eagle.transform.localScale = new Vector3(startingScale.x * -1, eagle.transform.localScale.y, eagle.transform.localScale.z);
@@ -88,7 +91,6 @@ public class EagleAttackEvent : Event
         {
             eagle.transform.localScale = new Vector3(startingScale.x * 1, eagle.transform.localScale.y, eagle.transform.localScale.z);
         }
-
     }
 
     public void notifyCaptureEgg()

@@ -17,7 +17,7 @@ public class PointPopUp : MonoBehaviour
 
     void Update()
     {
-        float fade = objectColor.a - (fadeSpeed * Time.deltaTime);
+        float fade = objectColor.a - (fadeSpeed * Time.smoothDeltaTime);
 
         objectColor = new Color(objectColor.r, objectColor.g, objectColor.b, fade);
         this.GetComponent<TextMeshPro>().color = objectColor;
@@ -27,7 +27,7 @@ public class PointPopUp : MonoBehaviour
             Destroy(gameObject);
         }
 
-        transform.position += new Vector3(0, moveSpeed * Time.deltaTime, 0);
+        transform.position += new Vector3(0, moveSpeed * Time.smoothDeltaTime, 0);
     }
 
     public void setValue(int value)

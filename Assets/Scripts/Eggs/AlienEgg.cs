@@ -16,20 +16,6 @@ public class AlienEgg : Egg
         move();
     }
 
-    public override void registerHit()
-    {
-        remainingHits--;
-        if (remainingHits <= 0)
-        {
-            destroy(true);
-        }
-    }
-
-    private void move()
-    {
-        transform.position = transform.position - new Vector3(0, speed, 0) * Time.deltaTime;
-    }
-
     public override void destroy(bool destroyedByPlayer)
     {
         if (destroyedByPlayer)
@@ -38,8 +24,10 @@ public class AlienEgg : Egg
         }
         else
         {
-            manager.setLifes(0);
-            manager.gameOver();
+            if (!manager.devMode) { 
+                manager.setLifes(0);
+                manager.handleGameOver();
+            }
             Destroy(this.gameObject);
         }
     }

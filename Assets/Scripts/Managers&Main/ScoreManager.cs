@@ -5,33 +5,32 @@ using UnityEngine.UI;
 
 public class ScoreManager : MonoBehaviour
 {
-
     private Text scoreUI;
-    private int userScore = 0;
+    private int userScoreInSession = 0;
 
     void Start()
     {
         scoreUI = this.GetComponent<Text>();
-        scoreUI.text = userScore.ToString();
+        scoreUI.text = userScoreInSession.ToString();
     }
 
     void Update()
     {
-        scoreUI.text = userScore.ToString();
+        scoreUI.text = userScoreInSession.ToString();
     }
 
     public void addScore(int value)
     {
-        userScore = userScore + value;
+        userScoreInSession = userScoreInSession + value;
     }
 
     public void removeScore(int value)
     {
-        userScore = userScore - value;
+        userScoreInSession = userScoreInSession - value;
     }
 
     public int getUserScore()
     {
-        return userScore;
+        return userScoreInSession;
     }
 }
